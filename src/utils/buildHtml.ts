@@ -29,14 +29,16 @@ const buildHtml = async (pageId: string, token: string) => {
       });
 
       // transform table of content's link
-      const anchor$ = document.querySelectorAll('#notion-app > div > div.notion-cursor-listener > div > div.notion-scroller.vertical.horizontal > div.notion-page-content > div > div:nth-child(1) > div > a');
+      const anchor$ = document.querySelectorAll(
+        '#notion-app > div > div.notion-cursor-listener > div > div.notion-scroller.vertical.horizontal > div.notion-page-content > div > div:nth-child(1) > div > a',
+      );
 
       anchor$.forEach((item: HTMLAnchorElement) => {
         let url: URL;
 
         try {
           url = new URL(item.href);
-        } catch (e) { }
+        } catch (e) {}
 
         if (url?.host === 'www.notion.so') {
           const hashBlockID = getBlockId(item.hash.slice(1));
@@ -52,7 +54,9 @@ const buildHtml = async (pageId: string, token: string) => {
       });
 
       // transform bookmakr
-      const bookmark$ = document.querySelectorAll('#notion-app > div > div.notion-cursor-listener > div > div.notion-scroller.vertical.horizontal > div.notion-page-content > div[data-block-id] > div > div > a');
+      const bookmark$ = document.querySelectorAll(
+        '#notion-app > div > div.notion-cursor-listener > div > div.notion-scroller.vertical.horizontal > div.notion-page-content > div[data-block-id] > div > div > a',
+      );
 
       bookmark$.forEach((item: HTMLAnchorElement) => {
         if (!item.href) {
