@@ -31,6 +31,10 @@ const buildHtml = async (pageId: string, token: string) => {
           const [parsedOriginUrl] = item.src.split('?');
 
           item.src = `https://notion.so/image/${encodeURIComponent(parsedOriginUrl).replace('s3.us-west', 's3-us-west')}`;
+        } else if (item.src.startsWith('/')) {
+          const notionImage = item.src.replace(/^\/image\//, '');
+
+          item.src = decodeURIComponent(notionImage);
         }
       });
 
