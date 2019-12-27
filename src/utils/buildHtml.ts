@@ -87,7 +87,6 @@ const buildHtml = async (pageId: string, token: string) => {
         const content = content$.innerHTML;
 
         return {
-          id: pageId,
           title,
           titleString,
           content,
@@ -112,7 +111,6 @@ const buildHtml = async (pageId: string, token: string) => {
         const resource = view$.innerHTML;
 
         return {
-          id: pageId,
           title,
           titleString,
           content,
