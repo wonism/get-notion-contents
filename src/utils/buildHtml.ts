@@ -82,11 +82,14 @@ const buildHtml = async (pageId: string, token: string) => {
       if (content$ != null) {
         const title$ = content$.parentElement.querySelector('div > div');
 
+        const titleString = title$?.textContent ?? '';
         const title = title$?.innerHTML ?? '';
         const content = content$.innerHTML;
 
         return {
+          id: pageId,
           title,
+          titleString,
           content,
         };
       }
@@ -103,12 +106,15 @@ const buildHtml = async (pageId: string, token: string) => {
         const title$ = view$.parentElement.parentElement.querySelector('div[placeholder="Untitled"]')?.parentElement.parentElement;
         const content$ = title$.nextElementSibling;
 
+        const titleString = title$?.textContent ?? '';
         const title = title$?.innerHTML ?? '';
         const content = content$?.innerHTML ?? '';
         const resource = view$.innerHTML;
 
         return {
+          id: pageId,
           title,
+          titleString,
           content,
           resource,
         };

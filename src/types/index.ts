@@ -67,7 +67,9 @@ export type NotionResponse = {
 };
 
 export type NotionContent = {
+  id: string;
   title: string;
+  titleString: string;
   content: string;
   resource?: string;
 };

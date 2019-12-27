@@ -43,7 +43,9 @@ Promise<string[]>
 #### getPageById(id: string)
 ```ts
 Promise<{
+  id: string;
   title: string;
+  titleString: string;
   content: string;
   resource?: string;
 }>
@@ -52,7 +54,9 @@ Promise<{
 #### getPages()
 ```ts
 Promise<Array<{
+  id: string;
   title: string;
+  titleString: string;
   content: string;
   resource?: string;
 }>>
