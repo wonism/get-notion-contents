@@ -23,6 +23,12 @@ const buildHtml = async (pageId: string, token: string) => {
         item.removeAttribute('contenteditable');
       });
 
+      const control$ = document.querySelectorAll('div.notion-page-controls');
+
+      control$?.forEach((item: HTMLDivElement) => {
+        item.textContent = '';
+      });
+
       // transform image link
       const img$ = document.querySelectorAll('#notion-app img');
 
@@ -89,11 +95,12 @@ const buildHtml = async (pageId: string, token: string) => {
       const content$ = document.querySelector('#notion-app .notion-page-content');
 
       if (content$ != null) {
-        const emoji$ = content$.parentElement.querySelector('div').querySelector('.notion-record-icon');
-        const title$ = content$.parentElement.querySelector('div[placeholder="Untitled"]');
+        const wrapper$ = content$.parentElement;
+        const cover$ = wrapper$.querySelector('img')?.parentElement;
+        const title$ = wrapper$.querySelector('div[placeholder="Untitled"]')?.parentElement.parentElement;
 
-        const titleString = emoji$?.textContent ?? '' + title$?.textContent ?? '';
-        const title = title$?.innerHTML ?? '';
+        const titleString = title$?.textContent ?? '';
+        const title = (cover$?.innerHTML ?? '') + (title$?.innerHTML ?? '');
         const content = content$.innerHTML;
 
         return {
@@ -112,11 +119,13 @@ const buildHtml = async (pageId: string, token: string) => {
       }
 
       {
-        const title$ = view$.parentElement.parentElement.querySelector('div[placeholder="Untitled"]')?.parentElement.parentElement;
+        const wrapper$ = view$.parentElement.parentElement;
+        const cover$ = wrapper$.querySelector('img')?.parentElement;
+        const title$ = wrapper$.querySelector('div[placeholder="Untitled"]')?.parentElement.parentElement;
         const content$ = title$.nextElementSibling;
 
         const titleString = title$?.textContent ?? '';
-        const title = title$?.innerHTML ?? '';
+        const title = (cover$?.innerHTML ?? '') + (title$?.innerHTML ?? '');
         const content = content$?.innerHTML ?? '';
         const resource = view$.innerHTML;
 
