@@ -34,16 +34,14 @@ const buildHtml = async (pageId: string, token: string) => {
 
       img$.forEach((item: HTMLImageElement) => {
         const src = item.getAttribute('src');
-        let newSrc: string;
+        let newSrc: string = src;
 
         if (src.startsWith('https://s3.us-west')) {
           const [parsedOriginUrl] = src.split('?');
 
           newSrc = `https://notion.so/image/${encodeURIComponent(parsedOriginUrl).replace('s3.us-west', 's3-us-west')}`;
         } else if (src.startsWith('/')) {
-          const notionImage = src.replace(/^\/image\//, '');
-
-          newSrc = decodeURIComponent(notionImage);
+          newSrc = 'https://notion.so' + src;
         }
 
         item.setAttribute('src', newSrc);
