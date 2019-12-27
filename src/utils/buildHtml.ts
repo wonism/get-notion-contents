@@ -35,9 +35,7 @@ const buildHtml = async (pageId: string, token: string) => {
       });
 
       // transform table of content's link
-      const anchor$ = document.querySelectorAll(
-        '#notion-app .notion-page-content > div > div:nth-child(1) > div > a',
-      );
+      const anchor$ = document.querySelectorAll('#notion-app .notion-page-content > div > div:nth-child(1) > div > a');
 
       anchor$.forEach((item: HTMLAnchorElement) => {
         let url: URL;
@@ -60,9 +58,7 @@ const buildHtml = async (pageId: string, token: string) => {
       });
 
       // transform bookmakr
-      const bookmark$ = document.querySelectorAll(
-        '#notion-app .notion-page-content > div[data-block-id] > div > div > a',
-      );
+      const bookmark$ = document.querySelectorAll('#notion-app .notion-page-content > div[data-block-id] > div > div > a');
 
       bookmark$.forEach((item: HTMLAnchorElement) => {
         if (!item.href) {
@@ -122,7 +118,7 @@ const buildHtml = async (pageId: string, token: string) => {
     await browser.close();
 
     if (data == null) {
-      throw new Error('Can\'t load content');
+      throw new Error("Can't load content");
     }
 
     return data;
