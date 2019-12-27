@@ -20,6 +20,44 @@ $ export NOTION_TOKEN="<<YOUR_NOTION_TOKEN>>"
 $ npm start
 ```
 
+## Return type of methods
+
+#### getUser()
+```ts
+Promise<{
+  email: string;
+  family_name: string;
+  given_name: string;
+  id: string;
+  onboarding_completed: boolean;
+  profile_photo: string;
+  version: number;
+}>
+```
+
+#### getPageIds()
+```ts
+Promise<string[]>
+```
+
+#### getPageById(id: string)
+```ts
+Promise<{
+  title: string;
+  content: string;
+  resource?: string;
+}>
+```
+
+#### getPages()
+```ts
+Promise<Array<{
+  title: string;
+  content: string;
+  resource?: string;
+}>>
+```
+
 ## How to use
 ```ts
 import Notion from 'get-notion-contents';

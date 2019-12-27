@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import { flow, keys, values, get } from 'lodash/fp';
 import buildHtml from './utils/buildHtml';
 import request from './utils/request';
-import { NotionResponse, NotionUser } from './types';
+import { NotionResponse, NotionUser, NotionContent } from './types';
 
 export default class Notion {
   static getUser = flow(get('recordMap.notion_user'), values, get('0.value'));
@@ -46,7 +46,7 @@ export default class Notion {
     }
   }
 
-  public async getPageIds() {
+  public async getPageIds(): Promise<string[]> {
     if (this.userContent != null) {
       return Notion.getPageIds(this.userContent);
     }
@@ -58,7 +58,7 @@ export default class Notion {
     }
   }
 
-  public async getPageById(pageId: string) {
+  public async getPageById(pageId: string): Promise<NotionContent> {
     const page = await buildHtml(pageId, this.token);
 
     return page;

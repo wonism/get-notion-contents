@@ -17,8 +17,14 @@ const buildHtml = async (pageId: string, token: string) => {
     await page.waitFor(20000);
 
     const data = await page.evaluate(() => {
+      const contentEditable$ = document.querySelectorAll('div[contenteditable=true]');
+
+      contentEditable$?.forEach((item: HTMLDivElement) => {
+        item.removeAttribute('contenteditable');
+      });
+
       // transform image link
-      const img$ = document.querySelectorAll('div.notion-page-content img');
+      const img$ = document.querySelectorAll('#notion-app .notion-page-content img');
 
       img$.forEach((item: HTMLImageElement) => {
         if (item.src.startsWith('https://s3.us-west')) {
@@ -30,7 +36,7 @@ const buildHtml = async (pageId: string, token: string) => {
 
       // transform table of content's link
       const anchor$ = document.querySelectorAll(
-        '#notion-app > div > div.notion-cursor-listener > div > div.notion-scroller.vertical.horizontal > div.notion-page-content > div > div:nth-child(1) > div > a',
+        '#notion-app .notion-page-content > div > div:nth-child(1) > div > a',
       );
 
       anchor$.forEach((item: HTMLAnchorElement) => {
@@ -55,7 +61,7 @@ const buildHtml = async (pageId: string, token: string) => {
 
       // transform bookmakr
       const bookmark$ = document.querySelectorAll(
-        '#notion-app > div > div.notion-cursor-listener > div > div.notion-scroller.vertical.horizontal > div.notion-page-content > div[data-block-id] > div > div > a',
+        '#notion-app .notion-page-content > div[data-block-id] > div > div > a',
       );
 
       bookmark$.forEach((item: HTMLAnchorElement) => {
@@ -75,21 +81,53 @@ const buildHtml = async (pageId: string, token: string) => {
         item.style.overflowX = 'scroll';
       });
 
-      const content$ = document.querySelector('#notion-app > div > div.notion-cursor-listener > div > div > div.notion-page-content');
-      const contentEditable$ = content$.querySelectorAll('div[contenteditable=true]');
+      const content$ = document.querySelector('#notion-app .notion-page-content');
 
-      contentEditable$.forEach((item: HTMLDivElement) => {
-        item.removeAttribute('contenteditable');
-      });
+      if (content$ != null) {
+        const title$ = content$.parentElement.querySelector('div > div');
 
-      return content$?.innerHTML ?? '';
+        const title = title$?.innerHTML ?? '';
+        const content = content$.innerHTML;
+
+        return {
+          title,
+          content,
+        };
+      }
+
+      const view$ = document
+        .getElementById('notion-app')
+        .querySelectorAll('.notion-board-view, .notion-list-view, .notion-table-view, .notion-gallery-view')?.[0];
+
+      if (view$ == null) {
+        return null;
+      }
+
+      {
+        const title$ = view$.parentElement.parentElement.querySelector('div[placeholder="Untitled"]')?.parentElement.parentElement;
+        const content$ = title$.nextElementSibling;
+
+        const title = title$?.innerHTML ?? '';
+        const content = content$?.innerHTML ?? '';
+        const resource = view$.innerHTML;
+
+        return {
+          title,
+          content,
+          resource,
+        };
+      }
     });
 
     await browser.close();
 
+    if (data == null) {
+      throw new Error('Can\'t load content');
+    }
+
     return data;
   } catch (e) {
-    console.error(e.message);
+    return `Error: ${e.message}\noccurred while loading notion.so/${pageId.replace(/-/g, '')}\n\n`;
   }
 };
 

@@ -17,23 +17,20 @@ export type PageType =
   | 'image';
 
 export type NotionUser = {
-  role: Role;
-  value: {
-    email: string;
-    family_name: string;
-    given_name: string;
-    id: string;
-    onboarding_completed: boolean;
-    profile_photo: string;
-    version: number;
-  };
+  email: string;
+  family_name: string;
+  given_name: string;
+  id: string;
+  onboarding_completed: boolean;
+  profile_photo: string;
+  version: number;
 };
 
 // Bold, Italic, Strike, Anchor
-export type VisualizedTag = 'b' | 'i' | 's' | 'a';
+type VisualizedTag = 'b' | 'i' | 's' | 'a';
 type ParentTable = 'space' | 'block';
 
-export type NotionData = {
+type NotionData = {
   id: string;
   content?: string[];
   type: PageType;
@@ -67,4 +64,10 @@ export type NotionResponse = {
       };
     };
   };
+};
+
+export type NotionContent = {
+  title: string;
+  content: string;
+  resource?: string;
 };
