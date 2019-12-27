@@ -24,18 +24,23 @@ const buildHtml = async (pageId: string, token: string) => {
       });
 
       // transform image link
-      const img$ = document.querySelectorAll('#notion-app .notion-page-content img');
+      const img$ = document.querySelectorAll('#notion-app img');
 
       img$.forEach((item: HTMLImageElement) => {
-        if (item.src.startsWith('https://s3.us-west')) {
-          const [parsedOriginUrl] = item.src.split('?');
+        const src = item.getAttribute('src');
+        let newSrc: string;
 
-          item.src = `https://notion.so/image/${encodeURIComponent(parsedOriginUrl).replace('s3.us-west', 's3-us-west')}`;
-        } else if (item.src.startsWith('/')) {
-          const notionImage = item.src.replace(/^\/image\//, '');
+        if (src.startsWith('https://s3.us-west')) {
+          const [parsedOriginUrl] = src.split('?');
 
-          item.src = decodeURIComponent(notionImage);
+          newSrc = `https://notion.so/image/${encodeURIComponent(parsedOriginUrl).replace('s3.us-west', 's3-us-west')}`;
+        } else if (src.startsWith('/')) {
+          const notionImage = src.replace(/^\/image\//, '');
+
+          newSrc = decodeURIComponent(notionImage);
         }
+
+        item.setAttribute('src', newSrc);
       });
 
       // transform table of content's link
@@ -84,9 +89,10 @@ const buildHtml = async (pageId: string, token: string) => {
       const content$ = document.querySelector('#notion-app .notion-page-content');
 
       if (content$ != null) {
-        const title$ = content$.parentElement.querySelector('div > div');
+        const emoji$ = content$.parentElement.querySelector('div').querySelector('.notion-record-icon');
+        const title$ = content$.parentElement.querySelector('div[placeholder="Untitled"]');
 
-        const titleString = title$?.textContent ?? '';
+        const titleString = emoji$?.textContent ?? '' + title$?.textContent ?? '';
         const title = title$?.innerHTML ?? '';
         const content = content$.innerHTML;
 
