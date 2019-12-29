@@ -2,20 +2,22 @@ import fetch from 'node-fetch';
 import { flow, keys, values, get } from 'lodash/fp';
 import buildHtml from './utils/buildHtml';
 import request from './utils/request';
-import { NotionResponse, NotionUser, NotionContent } from './types';
+import { Option, NotionResponse, NotionUser, NotionContent } from './types';
 
 export default class Notion {
   static getUser = flow(get('recordMap.notion_user'), values, get('0.value'));
   static getPageIds = flow(get('recordMap.block'), keys);
 
+  private prefix: string;
   private token: string;
   private userContent: NotionResponse;
 
-  constructor(token: string) {
+  constructor(token: string, option: Option = { prefix: '/' }) {
     if (!token) {
       throw new Error('Token MUST be provided.');
     }
 
+    this.prefix = option.prefix ?? '/';
     this.token = token;
   }
 
@@ -59,7 +61,7 @@ export default class Notion {
   }
 
   public async getPageById(pageId: string): Promise<NotionContent> {
-    const page = await buildHtml(pageId, this.token);
+    const page = await buildHtml(pageId, this.token, this.prefix);
 
     return page;
   }

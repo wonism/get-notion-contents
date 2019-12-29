@@ -2,7 +2,7 @@ const Notion = require('../lib').default;
 
 const token = process.env.NOTION_TOKEN;
 
-const notion = new Notion(token);
+const notion = new Notion(token, { prefix: 'https://notion.so/' });
 
 (async () => {
   const pageIds = await notion.getPageIds();

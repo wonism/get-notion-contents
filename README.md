@@ -67,7 +67,7 @@ Promise<Array<{
 import Notion from 'get-notion-contents';
 
 // create instance of Notion.
-const notion = new Notion('<<YOUR_NOTION_TOKEN>>');
+const notion = new Notion('<<YOUR_NOTION_TOKEN>>', { prefix: '<<PREFIX_OF_LINK>>' });
 
 (async () => {
   // get user information

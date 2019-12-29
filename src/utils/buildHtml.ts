@@ -1,13 +1,22 @@
 import puppeteer from 'puppeteer';
 import getBlockId from './getBlockId';
 
-const buildHtml = async (pageId: string, token: string) => {
+const windowSet = (page, name, value) => page.evaluateOnNewDocument(`
+  Object.defineProperty(window, '${name}', {
+    get() {
+      return '${value}';
+    }
+  })
+`);
+
+const buildHtml = async (pageId: string, token: string, prefix: string) => {
   process.setMaxListeners(0);
 
   try {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
+    await windowSet(page, 'prefix', prefix);
     await page.goto(`https://www.notion.so/${pageId.split('-').join('')}`);
 
     const cookie = [{ name: 'token_v2', value: token }];
@@ -51,22 +60,39 @@ const buildHtml = async (pageId: string, token: string) => {
       const anchor$ = document.querySelectorAll('#notion-app .notion-page-content > div > div:nth-child(1) > div > a');
 
       anchor$.forEach((item: HTMLAnchorElement) => {
+        const href = item.getAttribute('href');
+        const hash = item.getAttribute('hash');
+
         let url: URL;
 
         try {
-          url = new URL(item.href);
+          url = new URL(href);
         } catch (e) {}
 
         if (url?.host === 'www.notion.so') {
-          const hashBlockID = getBlockId(item.hash.slice(1));
+          const hashBlockID = getBlockId(hash.slice(1));
 
-          item.href = `#${hashBlockID}`;
+          item.setAttribute('href', `#${hashBlockID}`);
 
           const block = document.querySelector(`div[data-block-id="${hashBlockID}"]`);
 
           if (block) {
-            block.id = hashBlockID;
+            block.setAttribute('id', hashBlockID);
           }
+        }
+      });
+
+      // transform relative links
+      const pages$ = document.querySelectorAll('#notion-app .notion-collection-item > a');
+
+      pages$.forEach((item: HTMLAnchorElement) => {
+        const href = item.getAttribute('href');
+
+        if (href.startsWith('/')) {
+          const newHref = href.match(/\w+$/)?.[0] ?? href;
+          const url = prefix + newHref;
+
+          item.setAttribute('href', url);
         }
       });
 
@@ -74,10 +100,12 @@ const buildHtml = async (pageId: string, token: string) => {
       const bookmark$ = document.querySelectorAll('#notion-app .notion-page-content > div[data-block-id] > div > div > a');
 
       bookmark$.forEach((item: HTMLAnchorElement) => {
-        if (!item.href) {
+        const href = item.getAttribute('href');
+
+        if (!href) {
           const link$: HTMLDivElement = item.querySelector('div > div:first-child > div:last-child');
 
-          item.href = link$.innerText;
+          item.setAttribute('href', link$.innerText);
         }
       });
 
@@ -102,6 +130,7 @@ const buildHtml = async (pageId: string, token: string) => {
         const content = content$.innerHTML;
 
         return {
+          type: 'NotionContent',
           title,
           titleString,
           content,
@@ -117,6 +146,8 @@ const buildHtml = async (pageId: string, token: string) => {
       }
 
       {
+        const type = view$.getAttribute('class')?.match(/^(?:notion-)(.+)(-view)$/)?.[1] ?? 'Resource';
+
         const wrapper$ = view$.parentElement.parentElement;
         const cover$ = wrapper$.querySelector('img')?.parentElement;
         const title$ = wrapper$.querySelector('div[placeholder="Untitled"]')?.parentElement.parentElement;
@@ -128,6 +159,7 @@ const buildHtml = async (pageId: string, token: string) => {
         const resource = view$.innerHTML;
 
         return {
+          type: type.slice(0, 1).toUpperCase() + type.slice(1),
           title,
           titleString,
           content,

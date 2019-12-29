@@ -1,3 +1,7 @@
+export type Option = {
+  prefix?: string;
+};
+
 type Role = 'editor' | 'reader' | string;
 export type PageType =
   | 'page'
@@ -67,6 +71,7 @@ export type NotionResponse = {
 };
 
 export type NotionContent = {
+  type: string;
   id: string;
   title: string;
   titleString: string;
