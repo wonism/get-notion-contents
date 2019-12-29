@@ -126,7 +126,9 @@ const buildHtml = async (pageId: string, token: string, option: Option) => {
         table$.forEach((item: HTMLDivElement) => {
           (item.children[0] as HTMLElement).style!.padding = '0';
           (item.previousElementSibling as HTMLElement).style!.paddingLeft = '0';
-          item.style.overflowX = 'scroll';
+          item.style.overflow = 'visible';
+          item.parentElement.style.maxWidth = '100%';
+          item.parentElement.style.overflow = 'auto hidden';
         });
       }
 
