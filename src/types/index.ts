@@ -78,3 +78,5 @@ export type NotionContent = {
   content: string;
   resource?: string;
 };
+
+export type Type = 'NotionContent' | 'NotionBoard' | 'NotionList' | 'NotionTable' | 'NotionGallery';

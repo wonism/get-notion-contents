@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import getBlockId from './getBlockId';
+import { Type } from '../types';
 
 const windowSet = (page, name, value) =>
   page.evaluateOnNewDocument(`
@@ -147,7 +148,7 @@ const buildHtml = async (pageId: string, token: string, prefix: string) => {
       }
 
       {
-        const type = view$.getAttribute('class')?.match(/^(?:notion-)(.+)(-view)$/)?.[1] ?? 'Resource';
+        const type = view$.getAttribute('class')?.match(/^(?:notion-)(.+)(-view)$/)?.[1] ?? 'Content';
 
         const wrapper$ = view$.parentElement.parentElement;
         const cover$ = wrapper$.querySelector('img')?.parentElement;
@@ -160,7 +161,7 @@ const buildHtml = async (pageId: string, token: string, prefix: string) => {
         const resource = view$.innerHTML;
 
         return {
-          type: 'Notion' + type.slice(0, 1).toUpperCase() + type.slice(1),
+          type: 'Notion' + type.slice(0, 1).toUpperCase() + type.slice(1) as Type,
           title,
           titleString,
           content,
