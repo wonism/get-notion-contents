@@ -1,5 +1,6 @@
 export type Option = {
   prefix?: string;
+  removeStyle?: boolean;
 };
 
 type Role = 'editor' | 'reader' | string;

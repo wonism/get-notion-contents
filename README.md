@@ -67,7 +67,7 @@ Promise<Array<{
 import Notion from 'get-notion-contents';
 
 // create instance of Notion.
-const notion = new Notion('<<YOUR_NOTION_TOKEN>>', { prefix: '<<PREFIX_OF_LINK>>' });
+const notion = new Notion('<<YOUR_NOTION_TOKEN>>', { prefix: '<<PREFIX_OF_LINK>>', removeStyle: false });
 
 (async () => {
   // get user information
@@ -87,6 +87,10 @@ const notion = new Notion('<<YOUR_NOTION_TOKEN>>', { prefix: '<<PREFIX_OF_LINK>>
   console.log(pages);
 })();
 ```
+
+#### Option
+- prefix: add prefix into relative links
+- removeStyle: remove inline styles
 
 ---
 

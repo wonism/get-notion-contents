@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 import getBlockId from './getBlockId';
-import { Type } from '../types';
+import { Option, Type } from '../types';
 
 const windowSet = (page, name, value) =>
   page.evaluateOnNewDocument(`
@@ -11,14 +11,14 @@ const windowSet = (page, name, value) =>
   })
 `);
 
-const buildHtml = async (pageId: string, token: string, prefix: string) => {
+const buildHtml = async (pageId: string, token: string, option: Option) => {
   process.setMaxListeners(0);
 
   try {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    await windowSet(page, 'prefix', prefix);
+    await windowSet(page, 'option', option);
     await page.goto(`https://www.notion.so/${pageId.split('-').join('')}`);
 
     const cookie = [{ name: 'token_v2', value: token }];
@@ -39,6 +39,14 @@ const buildHtml = async (pageId: string, token: string, prefix: string) => {
       control$?.forEach((item: HTMLDivElement) => {
         item.textContent = '';
       });
+
+      if (option.removeStyle) {
+        const elements$ = document.querySelectorAll('*[style]');
+
+        elements$.forEach((item: HTMLElement) => {
+          item.removeAttribute('style');
+        });
+      }
 
       // transform image link
       const img$ = document.querySelectorAll('#notion-app img');
@@ -92,7 +100,7 @@ const buildHtml = async (pageId: string, token: string, prefix: string) => {
 
         if (href.startsWith('/')) {
           const newHref = href.match(/\w+$/)?.[0] ?? href;
-          const url = prefix + newHref;
+          const url = option.prefix + newHref;
 
           item.setAttribute('href', url);
         }
@@ -114,11 +122,13 @@ const buildHtml = async (pageId: string, token: string, prefix: string) => {
       // transform table view styles
       const table$ = document.querySelectorAll('div.notion-scroller.horizontal');
 
-      table$.forEach((item: HTMLDivElement) => {
-        (item.children[0] as HTMLElement).style!.padding = '0';
-        (item.previousElementSibling as HTMLElement).style!.paddingLeft = '0';
-        item.style.overflowX = 'scroll';
-      });
+      if (!option.removeStyle) {
+        table$.forEach((item: HTMLDivElement) => {
+          (item.children[0] as HTMLElement).style!.padding = '0';
+          (item.previousElementSibling as HTMLElement).style!.paddingLeft = '0';
+          item.style.overflowX = 'scroll';
+        });
+      }
 
       const content$ = document.querySelector('#notion-app .notion-page-content');
 
@@ -129,7 +139,7 @@ const buildHtml = async (pageId: string, token: string, prefix: string) => {
 
         const titleString = title$?.textContent ?? '';
         const title = (cover$?.innerHTML ?? '') + (title$?.innerHTML ?? '');
-        const content = content$.innerHTML;
+        const content = content$.innerHTML.replace(/\s-\s192px/g, '');
 
         return {
           type: 'NotionContent',
@@ -157,11 +167,11 @@ const buildHtml = async (pageId: string, token: string, prefix: string) => {
 
         const titleString = title$?.textContent ?? '';
         const title = (cover$?.innerHTML ?? '') + (title$?.innerHTML ?? '');
-        const content = content$?.innerHTML ?? '';
+        const content = (content$?.innerHTML ?? '').replace(/\s-\s192px/g, '');
         const resource = view$.innerHTML;
 
         return {
-          type: 'Notion' + type.slice(0, 1).toUpperCase() + type.slice(1) as Type,
+          type: ('Notion' + type.slice(0, 1).toUpperCase() + type.slice(1)) as Type,
           title,
           titleString,
           content,

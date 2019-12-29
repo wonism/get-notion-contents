@@ -8,17 +8,22 @@ export default class Notion {
   static getUser = flow(get('recordMap.notion_user'), values, get('0.value'));
   static getPageIds = flow(get('recordMap.block'), keys);
 
+  private option: Option;
   private prefix: string;
   private token: string;
+  private removeStyle: boolean;
   private userContent: NotionResponse;
 
-  constructor(token: string, option: Option = { prefix: '/' }) {
+  constructor(token: string, option: Option = { prefix: '/', removeStyle: false }) {
     if (!token) {
       throw new Error('Token MUST be provided.');
     }
 
-    this.prefix = option.prefix ?? '/';
     this.token = token;
+    this.option = {
+      prefix: option.prefix ?? '/',
+      removeStyle: Boolean(option.removeStyle),
+    };
   }
 
   private async getUserContent() {
@@ -61,7 +66,7 @@ export default class Notion {
   }
 
   public async getPageById(pageId: string): Promise<NotionContent> {
-    const page = await buildHtml(pageId, this.token, this.prefix);
+    const page = await buildHtml(pageId, this.token, this.option);
 
     return page;
   }
