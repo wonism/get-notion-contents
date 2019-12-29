@@ -1,7 +1,8 @@
 import puppeteer from 'puppeteer';
 import getBlockId from './getBlockId';
 
-const windowSet = (page, name, value) => page.evaluateOnNewDocument(`
+const windowSet = (page, name, value) =>
+  page.evaluateOnNewDocument(`
   Object.defineProperty(window, '${name}', {
     get() {
       return '${value}';
@@ -159,7 +160,7 @@ const buildHtml = async (pageId: string, token: string, prefix: string) => {
         const resource = view$.innerHTML;
 
         return {
-          type: type.slice(0, 1).toUpperCase() + type.slice(1),
+          type: 'Notion' + type.slice(0, 1).toUpperCase() + type.slice(1),
           title,
           titleString,
           content,
