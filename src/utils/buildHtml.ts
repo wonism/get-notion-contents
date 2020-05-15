@@ -18,7 +18,7 @@ const buildHtml = async (pageId: string, token: string, option: Option) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    await windowSet(page, 'option', option);
+    //await windowSet(page, 'option', option);
     await page.goto(`https://www.notion.so/${pageId.split('-').join('')}`);
 
     const cookie = [{ name: 'token_v2', value: token }];
@@ -27,7 +27,7 @@ const buildHtml = async (pageId: string, token: string, option: Option) => {
     await page.waitForSelector('#notion-app');
     await page.waitFor(20000);
 
-    const data = await page.evaluate(() => {
+    const data = await page.evaluate(option => {
       const contentEditable$ = document.querySelectorAll('div[contenteditable=true]');
 
       contentEditable$?.forEach((item: HTMLDivElement) => {
@@ -180,7 +180,7 @@ const buildHtml = async (pageId: string, token: string, option: Option) => {
           resource,
         };
       }
-    });
+    }, option);
 
     await browser.close();
 
