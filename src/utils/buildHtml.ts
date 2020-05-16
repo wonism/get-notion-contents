@@ -18,7 +18,6 @@ const buildHtml = async (pageId: string, token: string, option: Option) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    //await windowSet(page, 'option', option);
     await page.goto(`https://www.notion.so/${pageId.split('-').join('')}`);
 
     const cookie = [{ name: 'token_v2', value: token }];
