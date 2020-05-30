@@ -11,7 +11,7 @@ $ npm i -S get-notion-contents
 ```
 
 ## ⚠️ Prerequisite
-You need a token to use this package.
+You need a token to use this package if you want to get private contents.
 You can get it from [Notion.so](https://www.notion.so/) cookie. the key of it is `token_v2`.
 
 ## Development

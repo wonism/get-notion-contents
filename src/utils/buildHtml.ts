@@ -11,7 +11,7 @@ const windowSet = (page, name, value) =>
   })
 `);
 
-const buildHtml = async (pageId: string, token: string, option: Option) => {
+const buildHtml = async (pageId: string, token: string | null = null, option: Option) => {
   process.setMaxListeners(0);
 
   try {
@@ -20,9 +20,10 @@ const buildHtml = async (pageId: string, token: string, option: Option) => {
 
     await page.goto(`https://www.notion.so/${pageId.split('-').join('')}`);
 
-    const cookie = [{ name: 'token_v2', value: token }];
+    if (token != null) {
+      await page.setCookie({ name: 'token_v2', value: token });
+    }
 
-    await page.setCookie(...cookie);
     await page.waitForSelector('#notion-app');
     await page.waitFor(20000);
 

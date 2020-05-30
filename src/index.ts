@@ -10,16 +10,13 @@ export default class Notion {
 
   private option: Option;
   private prefix: string;
-  private token: string;
+  private token: string | null;
   private removeStyle: boolean;
   private userContent: NotionResponse;
 
-  constructor(token: string, option: Option = { prefix: '/', removeStyle: false }) {
-    if (!token) {
-      throw new Error('Token MUST be provided.');
-    }
-
+  constructor(token: string = null, option: Option = { prefix: '/', removeStyle: false }) {
     this.token = token;
+
     this.option = {
       prefix: option.prefix ?? '/',
       removeStyle: Boolean(option.removeStyle),
@@ -28,6 +25,10 @@ export default class Notion {
 
   private async getUserContent() {
     try {
+      if (this.token == null) {
+        throw new Error('You need to pass the token to get your user data.');
+      }
+
       const response = await request('loadUserContent', this.token);
       const result: NotionResponse = await response.json();
 

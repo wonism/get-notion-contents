@@ -1,6 +1,6 @@
 {
   "name": "get-notion-contents",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Get contents from notion",
   "keywords": [
     "notion"
