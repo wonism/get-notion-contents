@@ -1,12 +1,12 @@
 import fetch from 'node-fetch';
-import { flow, keys, values, get } from 'lodash/fp';
+import { flow, entries, filter, map, values, get, flatten, isEqual } from 'lodash/fp';
 import buildHtml from './utils/buildHtml';
 import request from './utils/request';
 import { Option, NotionResponse, NotionUser, NotionContent } from './types';
 
 export default class Notion {
   static getUser = flow(get('recordMap.notion_user'), values, get('0.value'));
-  static getPageIds = flow(get('recordMap.block'), keys);
+  static getPageIds = flow(get('recordMap.block'), entries, filter(flow(get('1.value.type'), isEqual('page'))), map(get('0')));
 
   private option: Option;
   private prefix: string;
@@ -43,27 +43,25 @@ export default class Notion {
   }
 
   public async getUser(): Promise<NotionUser> {
-    if (this.userContent != null) {
-      return Notion.getUser(this.userContent);
-    }
+    const userContent = this.userContent ?? (await this.getUserContent());
+    const user = Notion.getUser(userContent);
 
-    const result = await this.getUserContent();
-
-    if (result != null) {
-      return Notion.getUser(result);
-    }
+    return user;
   }
 
-  public async getPageIds(): Promise<string[]> {
-    if (this.userContent != null) {
-      return Notion.getPageIds(this.userContent);
+  public async getPageIds(skipChildren = true): Promise<string[]> {
+    const userContent = this.userContent ?? (await this.getUserContent());
+    const pageIds = Notion.getPageIds(this.userContent);
+
+    if (skipChildren) {
+      return pageIds;
     }
 
-    const result = await this.getUserContent();
+    const chunks = await Promise.all(pageIds.map(async pageId => (await request('loadPageChunk', this.token, { pageId })).json()));
 
-    if (result != null) {
-      return Notion.getPageIds(result);
-    }
+    const pageIdsWithChildren = flatten(chunks.map(Notion.getPageIds));
+
+    return pageIdsWithChildren;
   }
 
   public async getPageById(pageId: string): Promise<NotionContent> {

@@ -6,7 +6,7 @@ const notion = new Notion(token, { prefix: 'https://notion.so/' });
 
 (async () => {
   if (token != null) {
-    const pageIds = await notion.getPageIds();
+    const pageIds = await notion.getPageIds(false);
 
     const pages = await Promise.all(
       pageIds.map(
