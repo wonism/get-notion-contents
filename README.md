@@ -35,7 +35,7 @@ Promise<{
 }>
 ```
 
-#### getPageIds(skipChildren: boolean = true)
+#### getPageIds(skipChildren: boolean = false)
 ```ts
 Promise<string[]>
 ```

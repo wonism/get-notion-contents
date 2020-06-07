@@ -49,7 +49,7 @@ export default class Notion {
     return user;
   }
 
-  public async getPageIds(skipChildren = true): Promise<string[]> {
+  public async getPageIds(skipChildren = false): Promise<string[]> {
     const userContent = this.userContent ?? (await this.getUserContent());
     const pageIds = Notion.getPageIds(this.userContent);
 
